@@ -1,25 +1,27 @@
-using UnityEngine;
-using UnityEditor;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
-[CustomEditor(typeof(MonoBehaviour), true)]
+[CustomEditor(typeof(Object), true)] // "Object" inclui MonoBehaviour e ScriptableObject
 public class SinforosoButtonManager : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        MonoBehaviour _componente = (MonoBehaviour)target;
-        MethodInfo[] _metodos = _componente.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-        foreach (MethodInfo _metodo in _metodos)
+        Object _obj_target = target;
+
+        MethodInfo[] _methods = _obj_target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        foreach (MethodInfo _method in _methods)
         {
-            var _atributos = _metodo.GetCustomAttributes(typeof(SinforosoButton), false);
+            var _attributes = _method.GetCustomAttributes(typeof(SinforosoButton), false);
 
-            if (_atributos.Length > 0)
+            if (_attributes.Length > 0)
             {
-                if (GUILayout.Button(_metodo.Name))
+                if (GUILayout.Button(_method.Name))
                 {
-                    _metodo.Invoke(_componente, null);
+                    _method.Invoke(_obj_target, null);
                 }
             }
         }
